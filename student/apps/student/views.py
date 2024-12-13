@@ -11,15 +11,18 @@ class StudentView(APIView):
      
      def get(self, request):
           serializer = StudentSerializer(self.student_obj, many=True)
-          return Response({'status':200, 'message':'Success', 'payload':serializer.data})
+          # return Response({'status':200, 'message':'Success', 'payload':serializer.data})
+          student_data = serializer.data
+          return render(request, "index.html", {"students":student_data})
           
      def post(self, request):
-          serializer = StudentSerializer(data=request.data)
+          # serializer = StudentSerializer(data=request.data)
           
-          if not serializer.is_valid():
-               return Response({'status':400, "message":"error occured", "payload":serializer.errors})
-          serializer.save()
-          return Response({'status':201, 'message':'data inserted', 'payload':serializer.data})
+          # if not serializer.is_valid():
+          #      return Response({'status':400, "message":"error occured", "payload":serializer.errors})
+          # serializer.save()
+          # return Response({'status':201, 'message':'data inserted', 'payload':serializer.data})
+          return render(request, "studentform.html")
           
      def put(self, request): 
           try:
