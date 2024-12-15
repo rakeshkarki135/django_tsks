@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <style>
+        
+        body{
+            background: whitesmoke;
+        }
+
+        .container{
+            max-width: 60%;
+            margin: auto;
+            display: flex;
+            flex-wrap: wrap;
+            gap: 20px;
+            justify-content: center;
+            margin-top: 100px;
+            margin-bottom: 100px;
+
+        }
+
+        .student_info{
+            width: 300px;
+            height: auto;
+            border-radius: 20px;
+            background: white;
+            padding: 15px 5px 35px 25px;
+            
+        }
+
+        p{
+            color: black;
+        }
+
+        .btns{
+            display: flex;
+            gap: 10px;
+            margin-top: 15px;
+
+        }
+
+        a{
+            text-decoration: none;
+            width: 80px; 
+            background: black;
+            border-radius: 10px;
+            color: white;
+            padding:10px 0px;
+            padding-left: 30px;
+            
+        }
+
+        a:hover{
+            background: whitesmoke;
+            color:black;
+            border:solid black 2px;
+        }
+
+        .create{
+            display:flex;
+            justify-content: end;
+            width: 90%;
+            
+        }
+
+    </style>
+</head>
+<body>
+
+    
+    <h1 align="center">Welcome to the my api</h1>
+
+    {% if messages %}
+        <script>
+            {% for message in messages %}
+                alert('{{message}}')
+            {% endfor %}
+        </script>
+    {% endif %}
+
+    <div class="create">
+        <a href="{% url 'add-student' %}">Create-Student</a>
+    </div>
+
+    <div class="container">
+
+        {% for student in students %}
+        <div class="student_info">
+            
+            <p>Id : {{ student.id }}</p>
+            
+            <p>Name : {{ student.name }}</p>
+            
+            <p>Address : {{ student.address }}</p>
+            
+            <p>Gender : {{ student.gender }}</p>
+            
+            <p>Age : {{ student.age }}</p>
+            
+            <div class="btns">
+                <a href="{% url 'update-student' student.id %}">Edit</a>
+                <a href="{% url 'delete-student' student.id %}">Delete</a>
+            </div>
+
+        </div>
+
+        {% endfor %}
+    </div>
+
+    
+</body>
+</html>

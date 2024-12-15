@@ -21,4 +21,5 @@ import apps
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('', include('apps.student.urls')),
+    path('student/', include('apps.nerd.urls')),
 ]
