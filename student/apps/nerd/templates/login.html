@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>login</title>
+    <style>
+        body{
+            background: whitesmoke;
+        }
+
+        form{
+            width: 60%;
+            margin: auto;
+            background: white;
+            padding: 30px;
+            border-radius: 20px;
+            margin-top: 250px;
+            padding-bottom: 50px;
+        }
+
+        .input{
+            padding: 15px;
+            margin-bottom: 10px;
+        }
+
+        input{
+            width: 100%;
+            height: 50px;
+            border-radius: 10px; 
+            font-size: 20px;
+            padding:10px 0px 10px 10px;
+            box-sizing: border-box;
+        }
+
+        button{
+            width: 150px;
+            height: 50px;
+            background: black;
+            color: white;
+            border-radius: 10px;
+            margin-left: 17px;
+            font-size: 20px;
+            margin-top: -15px;
+
+        }
+
+        button:hover{
+            background: whitesmoke;
+            color: black;
+            border: 2px solid black;
+        }
+
+        .error{
+            background: rgb(255, 102, 102);
+            border-radius: 10px;
+            width: 98%;
+            padding: 2px 5px;
+        }
+
+        a{
+            display: block;
+            text-align: center;
+            text-decoration: None;
+            margin-top: -15px;
+        }
+
+        a:hover{
+            color:red;
+        }
+    </style>
+</head>
+<body>
+
+
+    
+    <form method="POST">
+        {% csrf_token %}  <!-- CSRF token for security -->
+
+        <!--for the error messsages-->
+        {% if messages %}
+        <div class="error">
+            {% for message in messages%}
+            <p style="color:white;font-size: 20px;text-align: center;"> {{ message }}</p>
+            {% endfor %}
+        </div>
+        {% endif%}
+
+
+        <h1 align="center">User Login</h1>
+        
+        <div class="input">
+            <input type="text" value="" name="username" placeholder="Enter your Username or Email Address" required>
+        </div>
+
+        <div class="input">
+            <input type="text" value="" name="password" placeholder="Enter your Password" required>
+        </div>
+        
+            <p><a href="{% url 'register-user' %}">Do not have account? Register from here.</a></p>
+        
+        <button type="submit">Submit</button>
+
+    </form>
+</body>
+</html>
