@@ -1,7 +1,6 @@
 
 from django.contrib.auth.base_user import BaseUserManager
 
-
 # we need to modify user and superuser
 class UserManager(BaseUserManager):
     def create_user(self, phone_number, password=None, **extra_fields):
@@ -13,7 +12,7 @@ class UserManager(BaseUserManager):
             
         user = self.model(phone_number = phone_number, **extra_fields)
         user.set_password(password)
-        user.save(using = self.db)
+        user.save(using = self._db)
         
         return user
     
@@ -22,7 +21,14 @@ class UserManager(BaseUserManager):
         extra_fields.setdefault("is_superuser", True)
         extra_fields.setdefault("is_active", True)
         
-        return self.create_user(phone_number, password, **extra_fields)
+        # to avoid error caused by circular import
+        from .models import Superuser
+        
+        superuser = Superuser.objects.create(phone_number = phone_number, **extra_fields)
+        superuser.set_password(password)
+        superuser.save(using=self._db)
+        
+        return superuser
         
         
 

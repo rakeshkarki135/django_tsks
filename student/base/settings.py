@@ -131,3 +131,6 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 LOGIN_URL = "login-user"
 
+ACCOUNT_SID = config("TWILIO_API_KEY_SID", cast=str)
+ACCOUNT_AUTH = config("TWILIO_SECRET", cast=str)
+
