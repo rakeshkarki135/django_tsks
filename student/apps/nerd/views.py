@@ -6,6 +6,9 @@ from django.contrib import messages
 from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.decorators  import login_required
 
+from rest_framework.decorators import api_view
+from rest_framework.response import Response
+
 from django.contrib.auth import get_user_model
 User = get_user_model()
 
@@ -24,7 +27,7 @@ def register_user(request):
             return redirect("register-user")
         
         try:
-            if User.objects.filter(username = username).exists():
+            if User.objects.filter(phone_number = username).exists():
                 messages.info(request, f"User with username {username} already Exists")
                 return redirect("register-user")
             
@@ -34,14 +37,14 @@ def register_user(request):
             
             
             user = User.objects.create(
-                                first_name = firstName,
-                                username = username,
-                                email = email,
-                                )
+                            first_name = firstName,
+                            phone_number = username,
+                            email = email,
+                            )
             
             user.set_password(password)
             user.save()
-            return redirect("login")
+            return redirect("login-user")
                                 
             
         except User.DoesNotExist:
@@ -63,13 +66,13 @@ def login_user(request):
                     messages.error(request, "User doesnot Exist")
                     return redirect("login-user")
                 
-                username = user_obj.username
+                username = user_obj.phone_number
             else:
-                if not User.objects.filter(username = username).exists():
+                if not User.objects.filter(phone_number = username).exists():
                     messages.info(request, "User doesnot Exist")
                     return redirect("login-user")
                 
-            user = authenticate(username = username, password = password)
+            user = authenticate(phone_number = username, password = password)
             if user is None:
                 messages.info(request, "Invalid Credentails")
                 return redirect("login-user")
@@ -143,3 +146,16 @@ def delete_std(request, student_id):
 def logout_user(request):
     logout(request)
     return redirect("login-user")
+
+@api_view(['POST'])
+def send_otp(request):
+    data = request.data
+    
+    if data.get("phone_number") is None:
+        return Response({
+            "status":400,
+            "message":"Phone number is required"
+        })
+        
+        
+        
