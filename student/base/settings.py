@@ -44,6 +44,7 @@ INSTALLED_APPS = [
     'apps.student',
     "apps.nerd",
     'rest_framework',
+    'rest_framework_simplejwt',
 ]
 
 MIDDLEWARE = [
@@ -106,6 +107,11 @@ AUTH_PASSWORD_VALIDATORS = [
     },
 ]
 
+REST_FRAMEWORK = {
+    "DEFAULT_AUTHENTICATION_CLASSES":(
+        "rest_framework_simplejwt.authentication.JWTAuthentication",
+    )
+}
 
 # Internationalization
 # https://docs.djangoproject.com/en/5.1/topics/i18n/
@@ -131,6 +137,6 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 LOGIN_URL = "login-user"
 
-ACCOUNT_SID = config("TWILIO_API_KEY_SID", cast=str)
-ACCOUNT_AUTH = config("TWILIO_SECRET", cast=str)
+# ACCOUNT_SID = config("TWILIO_API_KEY_SID", cast=str)
+# ACCOUNT_AUTH = config("TWILIO_SECRET", cast=str)
 
