@@ -1,4 +1,4 @@
-from django.shortcuts import render,  HttpResponse, redirect
+from django.shortcuts import render,  HttpResponse, redirect, get_object_or_404
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from .models import Student
@@ -7,14 +7,17 @@ from .forms import StudentForm
 from rest_framework import status
 from rest_framework_simplejwt.tokens import RefreshToken
 from django.contrib.auth.models import User
+from rest_framework.permissions import IsAuthenticated
+
 
 from django.contrib.auth import get_user_model
-User = get_user_model
+User = get_user_model()
 
 
 
 # Create your views here.
 class StudentView(APIView):
+     permission_classes = [IsAuthenticated]
      student_obj = Student.objects.all()
      
      def get(self, request):
@@ -94,14 +97,39 @@ class LoginView(APIView):
           username = data.get("phone_number")
           password = data.get("password")
           
-          user = User.objects.filter(phone_number = username)
-          if user and user.check_password(password):
-               refresh = RefreshToken.for_user(user)
-               return Response({
-                    "access_token" : str(refresh.access_token),
-                    "refresh_token" : str(refresh)
-               })
-          
-          return Response({"message":"Invalid credentials"}, status=status.HTTP_400_BAD_REQUEST)
+          try:
+               user = User.objects.get(phone_number = username)
+               if user.check_password(password):
+                    refresh = RefreshToken.for_user(user)
+                    return Response({
+                         "message":"Login Success",
+                         "access_token" : str(refresh.access_token),
+                         "refresh_token" : str(refresh)
+                         
+                    })
                
+               return Response({"message":"Invalid credentials"}, status=status.HTTP_400_BAD_REQUEST)
+               
+          except User.DoesNotExist:
+               return Response({"message":"User is not Found"}, status=status.HTTP_404_NOT_FOUND)
           
+class ProfileView(APIView):
+     permission_classes = [IsAuthenticated]
+     
+     def get(self, request):
+          user = request.user  
+          serializer = RegisterSerializer(user)
+          return Response(serializer.data)
+     
+
+class LogoutView(APIView):
+     permission_classes=[IsAuthenticated]
+     def post(self, request):
+          try:
+               refresh_token = request.data["refresh_token"]
+               token = RefreshToken(refresh_token)
+               token.blacklist()
+               
+               return Response({"message":"Logged out Successfully"}, status=status.HTTP_205_RESET_CONTENT)
+          except Exception as e:
+               return Response({"error":"Failed to logout the user"}, status=status.HTTP_400_BAD_REQUEST)
