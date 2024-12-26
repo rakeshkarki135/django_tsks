@@ -1,14 +1,15 @@
-from django.shortcuts import render,  HttpResponse, redirect, get_object_or_404
+from rest_framework import status
 from rest_framework.views import APIView
 from rest_framework.response import Response
-from .models import Student
-from .serializer import StudentSerializer, RegisterSerializer
-from .forms import StudentForm
-from rest_framework import status
-from rest_framework_simplejwt.tokens import RefreshToken
-from django.contrib.auth.models import User
 from rest_framework.permissions import IsAuthenticated
+from rest_framework.decorators import permission_classes
+from rest_framework_simplejwt.tokens import RefreshToken
 
+from .models import Student
+from .forms import StudentForm
+from .serializer import StudentSerializer, RegisterSerializer
+from django.contrib.auth.models import User
+from django.shortcuts import render, HttpResponse, redirect
 
 from django.contrib.auth import get_user_model
 User = get_user_model()
@@ -17,8 +18,13 @@ User = get_user_model()
 
 # Create your views here.
 class StudentView(APIView):
-     permission_classes = [IsAuthenticated]
      student_obj = Student.objects.all()
+     
+     def permission_checker(self, request):
+          if request.method in ["POST","PUT","PATCH","DELETE"] and not request.user.is_authenticated:
+               return Response({"error": "authentication credentials not provided"}, status=status.HTTP_401_UNAUTHORIZED)
+          return None
+          
      
      def get(self, request):
           serializer = StudentSerializer(self.student_obj, many=True)
@@ -27,8 +33,11 @@ class StudentView(APIView):
           
           
      def post(self, request):
-          serializer = StudentSerializer(data=request.data)
+          permission_error = self.permission_checker(request)
+          if permission_error:
+               return permission_error
           
+          serializer = StudentSerializer(data=request.data)
           if not serializer.is_valid():
                return Response({'status':400, "message":"error occured", "payload":serializer.errors})
           serializer.save()
@@ -36,6 +45,10 @@ class StudentView(APIView):
           
           
      def put(self, request): 
+          permission_error = self.permission_checker(request)
+          if permission_error:
+               return permission_error
+          
           try:
                student = Student.objects.get(id = request.data['id'])
           except Exception as e:
@@ -48,8 +61,12 @@ class StudentView(APIView):
           serializer.save()
           return Response({'status':200, 'message':'success', 'payload':serializer.data})
      
-     
+
      def patch(self, request):
+          permission_error = self.permission_checker(request)
+          if permission_error:
+               return permission_error
+          
           try:
                student = Student.objects.get(id = request.data['id'])
           except Exception as e:
@@ -64,6 +81,10 @@ class StudentView(APIView):
      
      
      def delete(self, request, id):
+          permission_error = self.permission_checker(request)
+          if permission_error:
+               return permission_error
+          
           try:
                student = Student.objects.get(id=id)
                student.delete()
@@ -74,6 +95,7 @@ class StudentView(APIView):
 
           except Exception as e:
                return Response({'status': 500, 'message': 'An error occurred', 'error': str(e)})
+          
      
 
 class RegisterView(APIView):
@@ -112,6 +134,7 @@ class LoginView(APIView):
                
           except User.DoesNotExist:
                return Response({"message":"User is not Found"}, status=status.HTTP_404_NOT_FOUND)
+          
           
 class ProfileView(APIView):
      permission_classes = [IsAuthenticated]
