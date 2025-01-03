@@ -52,6 +52,7 @@ INSTALLED_APPS = [
     "apps.nerd",
     'rest_framework',
     'rest_framework_simplejwt.token_blacklist',
+    'corsheaders',
 ]
     
 
@@ -63,6 +64,9 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
+    # for integration with react
+    'django.contrib.sessions.middleware.SessionMiddleware',
+    'corsheaders.middleware.CorsMiddleware',
 ]
 
 ROOT_URLCONF = 'base.urls'
@@ -118,8 +122,18 @@ AUTH_PASSWORD_VALIDATORS = [
 REST_FRAMEWORK = {
     "DEFAULT_AUTHENTICATION_CLASSES":(
         "rest_framework_simplejwt.authentication.JWTAuthentication",
+        # for integration with react
+        # 'rest_framework.permissions.AllowAny',
+    ),
+    "DEFAULT_RENDERER_CLASSES" : (
+        "rest_framework.renderers.JSONRenderer",
     )
 }
+
+# for integration with react
+CORS_ALLOWED_ORIGINS = [
+'http://localhost:5173' # i am using 3000 port to run the frontend server
+]
 
 # Internationalization
 # https://docs.djangoproject.com/en/5.1/topics/i18n/
